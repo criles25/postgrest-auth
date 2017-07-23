@@ -1,6 +1,4 @@
 {
-  "algorithm": "HS256",
-  "audience": "https://agameoftheories.com",
   "connection": {
     "host": "localhost",
     "port": 5432,
@@ -13,12 +11,17 @@
     "max": 10
   },
   "connection_string": "postgres://postgres:pass@localhost/postgres",
-  "expiration": 604800,
-  "issuer": "https://agameoftheories.com",
+  "payload": {
+    "algorithm": "HS256",
+    "audience": "https://agameoftheories.com",
+    "expiration": 604800,
+    "issuer": "https://agameoftheories.com",
+    "role": "agot_user",
+    "scope": "agot_user",
+    "subject": "a_user"
+  },
   "port": 3001,
-  "role": "agot_user",
   "schema": "api",
-  "scope": "agot_user",
   "secret": "secret",
   "table": "users"
 }

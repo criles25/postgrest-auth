@@ -15,14 +15,14 @@ var router = express.Router();
 function createAccessToken(user) {
   return jwt.sign(
     {
-      iss: config.issuer,
-      aud: config.audience,
-      exp: Math.floor(Date.now() / 1000) + config.expiration,
-      scope: config.scope,
-      sub: config.subject || user.username_lowercase,
+      iss: config.payload.issuer,
+      aud: config.payload.audience,
+      exp: Math.floor(Date.now() / 1000) + config.payload.expiration,
+      scope: config.payload.scope,
+      sub: config.payload.subject || user.username_lowercase,
       jti: genJti(), // unique identifier for the token
-      alg: config.algorithm,
-      role: config.role
+      alg: config.payload.algorithm,
+      role: config.payload.role
     },
     config.secret
   );
