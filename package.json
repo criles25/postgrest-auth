@@ -3,7 +3,8 @@
   "version": "0.0.1",
   "description": "Authorization server for postgREST",
   "scripts": {
-    "start": "node ./bin/www"
+    "start": "NODE_ENV=production node ./bin/www",
+    "start:dev": "nodemon ./bin/www"
   },
   "repository": {
     "type": "git",
@@ -20,12 +21,14 @@
     "body-parser": "^1.17.2",
     "debug": "^2.6.8",
     "express": "^4.15.3",
+    "express-bearer-token": "^2.1.0",
     "express-validation": "^1.0.2",
     "http-status-codes": "^1.1.6",
     "jsonwebtoken": "^7.4.1",
     "knex": "^0.13.0",
     "lodash": "^4.17.4",
     "morgan": "^1.8.2",
+    "nodemon": "^1.11.0",
     "pg": "^7.0.2"
   }
 }
