@@ -17,14 +17,14 @@ const schema = {
   body: {
     username: Joi.string().alphanum().min(3).max(20).required(),
     password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
-    email: Joi.string().email().required()
+    email: Joi.string().email()
   }
 };
 
 router.post("/users", validate(schema), async function(req, res, next) {
   let existingUsers = await knex("api.users")
     .where("username_lowercase", req.body.username.toLowerCase())
-    .orWhere("email", req.body.email.toLowerCase());
+    .orWhere("email", req.body.email ? req.body.email.toLowerCase() : "");
 
   if (existingUsers.length > 0) {
     let err = new Error("A user with that username or email already exists");
@@ -43,7 +43,7 @@ router.post("/users", validate(schema), async function(req, res, next) {
       .insert({
         username: req.body.username,
         username_lowercase: req.body.username.toLowerCase(),
-        email: req.body.email.toLowerCase(),
+        email: req.body.email ? req.body.email.toLowerCase() : null,
         password: passDigest
       })
       .returning("*");
