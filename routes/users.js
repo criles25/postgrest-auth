@@ -1,5 +1,7 @@
 var config = require("./../config/config");
-
+var bcrypt = require("bcrypt");
+var validate = require("express-validation");
+var Joi = require("joi");
 var jwt = require("jsonwebtoken");
 var knex = require("knex")({
   client: "postgresql",
@@ -39,14 +41,15 @@ function genJti() {
 }
 
 /* Create account */
-router.post("/users", function(req, res, next) {
-  if (!req.body.username || !req.body.password || !req.body.email) {
-    var err = new Error("You must send a username, email and password");
-    err.status = 400;
-
-    return next(err);
+var schema = {
+  body: {
+    username: Joi.string().alphanum().min(3).max(20).required(),
+    password: Joi.string().regex(/^[a-zA-Z0-9]{3,30}$/).required(),
+    email: Joi.string().email().required()
   }
+};
 
+router.post("/users", validate(schema), function(req, res, next) {
   // Check if user exists in db
   return knex("api.users")
     .where("username", req.body.username)
@@ -57,32 +60,37 @@ router.post("/users", function(req, res, next) {
           "A user with that username or email already exists"
         );
         err.status = 400;
+        err.errors = [
+          { messages: ["A user with that username or email already exists"] }
+        ];
 
         return next(err);
       }
 
       // Insert into db
-      return knex("api.users")
-        .insert({
-          username: req.body.username,
-          username_lowercase: req.body.username.toLowerCase(),
-          email: req.body.email,
-          password: req.body.password
-        })
-        .returning("*")
-        .then(users => {
-          return res.status(201).send({
-            access_token: createAccessToken(users[0])
+      return bcrypt.hash(req.body.password, 10).then(function(hash) {
+        return knex("api.users")
+          .insert({
+            username: req.body.username,
+            username_lowercase: req.body.username.toLowerCase(),
+            email: req.body.email,
+            password: hash
+          })
+          .returning("*")
+          .then(users => {
+            return res.status(201).send({
+              access_token: createAccessToken(users[0])
+            });
           });
-        });
+      });
     })
     .catch(err => {
-      console.error(err);
+      err.status = 500;
+      err.errors = [
+        { messages: ["There was a problem creating your account"] }
+      ];
 
-      var publicErr = new Error("There was a problem creating your account");
-      publicErr.status = 500;
-
-      return next(publicErr);
+      return next(err);
     });
 });
 

@@ -16,11 +16,15 @@
   },
   "homepage": "https://github.com/criles25/postgrest-auth-server",
   "dependencies": {
+    "bcrypt": "^1.0.2",
     "body-parser": "^1.17.2",
     "debug": "^2.6.8",
     "express": "^4.15.3",
+    "express-validation": "^1.0.2",
+    "http-status-codes": "^1.1.6",
     "jsonwebtoken": "^7.4.1",
     "knex": "^0.13.0",
+    "lodash": "^4.17.4",
     "morgan": "^1.8.2",
     "pg": "^7.0.2"
   }
