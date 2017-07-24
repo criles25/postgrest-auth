@@ -24,7 +24,8 @@ function createToken(user) {
       jti: genJti(), // unique identifier for the token
       alg: config.payload.algorithm,
       role: config.payload.role,
-      email: user.email
+      email: user.email,
+      count: user.token_count
     },
     config.secret
   );

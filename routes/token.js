@@ -45,11 +45,19 @@ router.post("/token", validate(tokenSchema), async function(req, res, next) {
       return next(err);
     }
 
+    // Increment token_count
+    let usersUpdated = await knex("api.users")
+      .where({
+        username_lowercase: req.body.username.toLowerCase()
+      })
+      .increment("token_count", 1)
+      .returning("*");
+
     return res.status(201).send({
-      access_token: createToken(user)
+      access_token: createToken(usersUpdated[0])
     });
   } else if (req.token) {
-    return jwt.verify(req.token, config.secret, (err, decoded) => {
+    return jwt.verify(req.token, config.secret, async (err, decoded) => {
       if (err) {
         err.status = 400;
         err.errors = [{ messages: ["Token invalid"] }];
@@ -57,11 +65,29 @@ router.post("/token", validate(tokenSchema), async function(req, res, next) {
         return next(err);
       }
 
-      return res.status(201).send({
-        access_token: createToken({
-          username: decoded.subject,
-          email: decoded.email
+      // Check token count
+      let user = await knex("api.users")
+        .where({
+          username_lowercase: decoded.sub.toLowerCase()
         })
+        .first("*");
+
+      if (user.token_count != decoded.count) {
+        var errTokenCount = new Error("Token invalid");
+        errTokenCount.status = 400;
+        errTokenCount.errors = [{ messages: ["Token invalid"] }];
+
+        return next(errTokenCount);
+      }
+      let usersIncremented = await knex("api.users")
+        .where({
+          username_lowercase: decoded.sub.toLowerCase()
+        })
+        .increment("token_count", 1)
+        .returning("*");
+
+      return res.status(201).send({
+        access_token: createToken(usersIncremented[0])
       });
     });
   }
