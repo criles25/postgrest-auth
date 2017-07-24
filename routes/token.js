@@ -45,16 +45,8 @@ router.post("/token", validate(tokenSchema), async function(req, res, next) {
       return next(err);
     }
 
-    // Increment token_count
-    let usersUpdated = await knex("api.users")
-      .where({
-        username_lowercase: req.body.username.toLowerCase()
-      })
-      .increment("token_count", 1)
-      .returning("*");
-
     return res.status(201).send({
-      access_token: createToken(usersUpdated[0])
+      access_token: createToken(user)
     });
   } else if (req.token) {
     return jwt.verify(req.token, config.secret, async (err, decoded) => {
@@ -79,15 +71,9 @@ router.post("/token", validate(tokenSchema), async function(req, res, next) {
 
         return next(errTokenCount);
       }
-      let usersIncremented = await knex("api.users")
-        .where({
-          username_lowercase: decoded.sub.toLowerCase()
-        })
-        .increment("token_count", 1)
-        .returning("*");
 
       return res.status(201).send({
-        access_token: createToken(usersIncremented[0])
+        access_token: createToken(user)
       });
     });
   }

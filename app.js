@@ -12,8 +12,10 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bearerToken());
 
-app.use(require("./routes/users"));
+app.use(require("./routes/email"));
+app.use(require("./routes/password"));
 app.use(require("./routes/token"));
+app.use(require("./routes/users"));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
