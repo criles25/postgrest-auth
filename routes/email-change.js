@@ -20,7 +20,7 @@ const schema = {
   }
 };
 
-router.post("/email", validate(schema), async function(req, res, next) {
+router.post("/email_change", validate(schema), async function(req, res, next) {
   let user = await knex("api.users")
     .where({
       username_lowercase: req.body.username.toLowerCase()
@@ -54,8 +54,8 @@ router.post("/email", validate(schema), async function(req, res, next) {
     })
     .returning("*");
 
-  return res.status(201).send({
-    access_token: createToken(usersUpdated[0])
+  return res.status(200).send({
+    message: "Email changed"
   });
 });
 

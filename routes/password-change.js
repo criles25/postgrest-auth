@@ -21,7 +21,11 @@ const schema = {
   }
 };
 
-router.post("/password", validate(schema), async function(req, res, next) {
+router.post("/password_change", validate(schema), async function(
+  req,
+  res,
+  next
+) {
   if (req.body.new_password !== req.body.new_password_confirm) {
     let err = new Error("Password do not match");
     err.status = 400;
@@ -68,7 +72,7 @@ router.post("/password", validate(schema), async function(req, res, next) {
     })
     .returning("*");
 
-  return res.status(201).send({
+  return res.status(200).send({
     access_token: createToken(usersUpdated[0])
   });
 });

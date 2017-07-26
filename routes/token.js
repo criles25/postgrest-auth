@@ -45,7 +45,7 @@ router.post("/token", validate(tokenSchema), async function(req, res, next) {
       return next(err);
     }
 
-    return res.status(201).send({
+    return res.status(200).send({
       access_token: createToken(user)
     });
   } else if (req.token) {
@@ -72,7 +72,7 @@ router.post("/token", validate(tokenSchema), async function(req, res, next) {
         return next(errTokenCount);
       }
 
-      return res.status(201).send({
+      return res.status(200).send({
         access_token: createToken(user)
       });
     });
