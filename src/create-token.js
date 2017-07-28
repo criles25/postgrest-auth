@@ -1,5 +1,6 @@
 const jwt = require("jsonwebtoken");
 const config = require("./../config/config");
+const _ = require("lodash");
 
 // Generate Unique Identifier for the access token
 function genJti() {
@@ -13,21 +14,15 @@ function genJti() {
   return jti;
 }
 
-function createToken(user) {
-  return jwt.sign(
-    {
-      iss: config.payload.issuer,
-      aud: config.payload.audience,
-      exp: Math.floor(Date.now() / 1000) + config.payload.expiration,
-      scope: config.payload.scope,
-      sub: config.payload.subject || user.username,
-      jti: genJti(), // unique identifier for the token
-      alg: config.payload.algorithm,
-      role: config.payload.role,
-      count: user.token_count
-    },
-    config.secret
-  );
+function createToken(payload = {}, secret = config.secret) {
+  let token = _.assign({}, config.payload, payload);
+
+  token.jti = genJti();
+  token.exp =
+    Math.floor(Date.now() / 1000) + (payload.exp || config.payload.exp);
+  token.count = payload.count || 0;
+
+  return jwt.sign(token, secret);
 }
 
 module.exports = createToken;

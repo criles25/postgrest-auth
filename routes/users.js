@@ -1,4 +1,5 @@
 const config = require("./../config/config");
+const nodemailer = require("nodemailer");
 const bcrypt = require("bcrypt");
 const validate = require("express-validation");
 const Joi = require("joi");
@@ -47,9 +48,39 @@ router.post("/users", validate(schema), async function(req, res, next) {
         password: passDigest
       })
       .returning("*");
+    let newUser = usersInserted[0];
+
+    if (newUser.email) {
+      let transporter = nodemailer.createTransport(config.nodemailer);
+
+      let mailOptions = {
+        from: '"A Game of Theories" <contact@agameoftheories.com>',
+        to: newUser.email,
+        subject: "Welcome!",
+        text: `
+        Your username for A Game of Theories is: ${newUser.username}
+
+        If you are having a problem with your account, please email contact@agameoftheories.com.
+
+        Thank you for using the site! Valar Dohaeris!
+
+        -A Game of Theories Team`
+      };
+
+      transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error(error);
+        }
+        console.log("Message %s sent: %s", info.messageId, info.response);
+      });
+    }
 
     return res.status(201).send({
-      access_token: createToken(usersInserted[0])
+      access_token: createToken({
+        aud: newUser.username_lowercase,
+        count: newUser.count,
+        sub: "access"
+      })
     });
   } catch (err) {
     err.status = 500;

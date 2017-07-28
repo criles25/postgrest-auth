@@ -46,36 +46,49 @@ router.post("/token", validate(tokenSchema), async function(req, res, next) {
     }
 
     return res.status(200).send({
-      access_token: createToken(user)
+      access_token: createToken({
+        aud: user.username_lowercase,
+        count: user.count,
+        sub: "access"
+      })
     });
   } else if (req.token) {
-    return jwt.verify(req.token, config.secret, async (err, decoded) => {
-      if (err) {
-        err.status = 400;
-        err.errors = [{ messages: ["Token invalid"] }];
+    return jwt.verify(
+      req.token,
+      config.secret,
+      { subject: "access" },
+      async (err, decoded) => {
+        if (err) {
+          err.status = 400;
+          err.errors = [{ messages: ["Token invalid"] }];
 
-        return next(err);
+          return next(err);
+        }
+
+        // Check token count
+        let user = await knex("api.users")
+          .where({
+            username_lowercase: decoded.aud.toLowerCase()
+          })
+          .first("*");
+
+        if (user.token_count != decoded.count) {
+          var errTokenCount = new Error("Token invalid");
+          errTokenCount.status = 400;
+          errTokenCount.errors = [{ messages: ["Token invalid"] }];
+
+          return next(errTokenCount);
+        }
+
+        return res.status(200).send({
+          access_token: createToken({
+            aud: user.username_lowercase,
+            count: user.count,
+            sub: "access"
+          })
+        });
       }
-
-      // Check token count
-      let user = await knex("api.users")
-        .where({
-          username_lowercase: decoded.sub.toLowerCase()
-        })
-        .first("*");
-
-      if (user.token_count != decoded.count) {
-        var errTokenCount = new Error("Token invalid");
-        errTokenCount.status = 400;
-        errTokenCount.errors = [{ messages: ["Token invalid"] }];
-
-        return next(errTokenCount);
-      }
-
-      return res.status(200).send({
-        access_token: createToken(user)
-      });
-    });
+    );
   }
 
   let err = new Error("Username or password invalid");

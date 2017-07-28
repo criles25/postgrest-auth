@@ -1,5 +1,4 @@
 const config = require("./../config/config");
-const createToken = require("./../src/create-token");
 const bcrypt = require("bcrypt");
 const validate = require("express-validation");
 const Joi = require("joi");

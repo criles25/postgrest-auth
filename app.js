@@ -13,6 +13,7 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bearerToken());
 
 app.use(require("./routes/email-change"));
+app.use(require("./routes/forgot-password"));
 app.use(require("./routes/forgot-user"));
 app.use(require("./routes/password-change"));
 app.use(require("./routes/token"));
