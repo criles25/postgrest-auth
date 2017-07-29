@@ -12,11 +12,11 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bearerToken());
 
-app.use(require("./routes/email-change"));
+app.use(require("./routes/change-email"));
+app.use(require("./routes/change-password"));
 app.use(require("./routes/forgot-password"));
-app.use(require("./routes/forgot-user"));
-app.use(require("./routes/password-change"));
-app.use(require("./routes/token"));
+app.use(require("./routes/forgot-username"));
+app.use(require("./routes/refresh-token"));
 app.use(require("./routes/users"));
 
 // catch 404 and forward to error handler
