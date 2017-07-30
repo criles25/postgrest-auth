@@ -1,3 +1,4 @@
+const config = require("../config/config");
 const bcrypt = require("bcrypt");
 const validate = require("express-validation");
 const validations = require("../config/validations");
@@ -24,15 +25,15 @@ router.post("/forgot_username", validate(schema), async function(
       .first("*");
 
     let mailOptions = {
-      from: '"A Game of Theories" <contact@agameoftheories.com>',
+      from: `"${config.app}" <${config.email}>`,
       to: user.email,
       subject: "Forgot username ✔",
       text:
-        `Your username has been requested for A Game of Theories: ${user.username}\n\n` +
+        `Your username has been requested for ${config.app}: ${user.username}\n\n` +
         "If you did not make this request, you can safely ignore this email.\n\n" +
         "A username request can be made by anyone, and it does not indicate that your account is in any danger of being accessed by someone else.\n\n" +
-        "Thank you for using the site! Valar Dohaeris!\n\n" +
-        "-A Game of Theories Team"
+        "Thank you for using the site!\n\n" +
+        `-${config.app} Team`
     };
 
     await transporter.sendMail(mailOptions);

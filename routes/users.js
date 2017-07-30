@@ -1,3 +1,4 @@
+const config = require("../config/config");
 const transporter = require("../src/transporter");
 const bcrypt = require("bcrypt");
 const validate = require("express-validation");
@@ -47,14 +48,14 @@ router.post("/users", validate(schema), async function(req, res, next) {
 
   if (user.email) {
     let mailOptions = {
-      from: '"A Game of Theories" <contact@agameoftheories.com>',
+      from: `"${config.app}" <${config.email}>`,
       to: user.email,
       subject: "Welcome!",
       text:
-        `Your username for A Game of Theories is: ${user.username}\n\n` +
-        "If you are having a problem with your account, please email contact@agameoftheories.com.\n\n" +
-        "Thank you for using the site! Valar Dohaeris!\n\n" +
-        "-A Game of Theories Team"
+        `Your username for ${config.app} is: ${user.username}\n\n` +
+        `If you are having a problem with your account, please email ${config.email}.\n\n` +
+        "Thank you for using the site!\n\n" +
+        `-${config.app} Team`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {

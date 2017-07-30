@@ -1,3 +1,4 @@
+const config = require("../config/config");
 const createToken = require("../src/create-token");
 const bcrypt = require("bcrypt");
 const validate = require("express-validation");
@@ -25,11 +26,11 @@ router.post("/forgot_password", validate(schema), async function(
       .first("*");
 
     let mailOptions = {
-      from: '"A Game of Theories" <contact@agameoftheories.com>',
+      from: `"${config.app}" <${config.email}>`,
       to: user.email,
       subject: "Password reset ✔",
       text:
-        "Your password has been requested to be reset on A Game of Theories.\n\n" +
+        `Your password has been requested to be reset on ${config.app}.\n\n` +
         "Use this reset token:\n\n" +
         `${createToken({
           aud: user.username_lowercase,
@@ -40,8 +41,8 @@ router.post("/forgot_password", validate(schema), async function(
         "This reset token will expire in 1 hour.\n\n" +
         "If you did not make this request, you can safely ignore this email.\n\n" +
         "A password reset request can be made by anyone, and it does not indicate that your account is in any danger of being accessed by someone else.\n\n" +
-        "Thank you for using the site! Valar Dohaeris!\n\n" +
-        "-A Game of Theories Team\n\n"
+        "Thank you for using the site!\n\n" +
+        `-${config.app} Team\n\n`
     };
 
     await transporter.sendMail(mailOptions);
