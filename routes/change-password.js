@@ -75,7 +75,7 @@ router.post("/change_password", validate(schema), async function(
   return res.status(200).send({
     access_token: createToken({
       aud: usersUpdated[0].username_lowercase,
-      count: usersUpdated[0].count,
+      count: usersUpdated[0].token_count,
       sub: "access"
     })
   });
