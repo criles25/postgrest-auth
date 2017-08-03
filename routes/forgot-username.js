@@ -20,20 +20,20 @@ router.post("/forgot_username", validate(schema), async function(
   next
 ) {
   try {
-    let user = await knex(`${config.schema}.${config.table}`)
+    let user = await knex(`${config.db.schema}.${config.db.table}`)
       .where({ email: req.body.email.toLowerCase() })
       .first("*");
 
     let mailOptions = {
-      from: `"${config.app}" <${config.email}>`,
+      from: `"${config.app_name}" <${config.email.from}>`,
       to: user.email,
       subject: "Forgot username ✔",
       text:
-        `Your username has been requested for ${config.app}: ${user.username}\n\n` +
+        `Your username has been requested for ${config.app_name}: ${user.username}\n\n` +
         "If you did not make this request, you can safely ignore this email.\n\n" +
         "A username request can be made by anyone, and it does not indicate that your account is in any danger of being accessed by someone else.\n\n" +
         "Thank you for using the site!\n\n" +
-        `-${config.app} Team`
+        `-${config.app_name} Team`
     };
 
     await transporter.sendMail(mailOptions);

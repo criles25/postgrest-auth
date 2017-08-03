@@ -30,7 +30,7 @@ router.post("/users", validate(schema), async function(req, res, next) {
           email: req.body.email ? req.body.email.toLowerCase() : null,
           password: digest
         })
-        .into(`${config.schema}.${config.table}`)
+        .into(`${config.db.schema}.${config.db.table}`)
         .returning("*")
         .then(usersInserted => {
           return trx
@@ -72,14 +72,15 @@ router.post("/users", validate(schema), async function(req, res, next) {
 
   if (user.email) {
     let mailOptions = {
-      from: `"${config.app}" <${config.email}>`,
+      from: `"${config.app_name}" <${config.email.from}>`,
       to: user.email,
       subject: "Welcome!",
       text:
-        `Your username for ${config.app} is: ${user.username}\n\n` +
-        `If you are having a problem with your account, please email ${config.email}.\n\n` +
+        `Your username for ${config.app_name} is: ${user.username}\n\n` +
+        `If you are having a problem with your account, please email ${config
+          .email.from}.\n\n` +
         "Thank you for using the site!\n\n" +
-        `-${config.app} Team`
+        `-${config.app_name} Team`
     };
 
     transporter.sendMail(mailOptions, (error, info) => {

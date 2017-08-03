@@ -1,29 +1,31 @@
 {
-  "app": "A Game of Theories",
-  "connection": {
-    "host": "localhost",
-    "port": 5432,
-    "database": "postgres",
-    "user": "postgres",
-    "password": "pass"
+  "app_name": "A Game of Theories",
+  "db": {
+    "connection": {
+      "host": "localhost",
+      "port": 5432,
+      "database": "postgres",
+      "user": "postgres",
+      "password": "pass"
+    },
+    "pool": {
+      "min": 2,
+      "max": 10
+    },
+    "schema": "auth",
+    "table": "users"
   },
-  "connection_pool": {
-    "min": 2,
-    "max": 10
-  },
-  "connection_string": "postgres://postgres:pass@localhost/postgres",
-  "email": "contact@agameoftheories.com",
-  "nodemailer": {
-      "host": "mail.privateemail.com",
-      "port": 465,
-      "secure": true,
-      "auth": {
-          "user": "contact@agameoftheories.com",
-          "pass": "thepassword"
-      }
+  "email": {
+    "from": "contact@agameoftheories.com",
+    "host": "mail.privateemail.com",
+    "port": 465,
+    "secure": true,
+    "auth": {
+        "user": "contact@agameoftheories.com",
+        "pass": "thepassword"
+    }
   },
   "payload": {
-    "alg": "HS256",
     "exp": 604800,
     "iss": "https://agameoftheories.com"
   },
@@ -32,7 +34,5 @@
     "anonymous": "web_anon",
     "user": "agot_user"
   },
-  "schema": "auth",
-  "secret": "secret",
-  "table": "users"
+  "secret": "secret"
 }

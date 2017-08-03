@@ -26,7 +26,7 @@ router.post("/change_password", validate(schema), async function(
 ) {
   if (req.body.current_password) {
     try {
-      let user = await knex(`${config.schema}.${config.table}`)
+      let user = await knex(`${config.db.schema}.${config.db.table}`)
         .where({ username_lowercase: req.body.username.toLowerCase() })
         .first("*");
 
@@ -44,7 +44,7 @@ router.post("/change_password", validate(schema), async function(
     }
   } else if (req.body.reset_token) {
     try {
-      let user = await knex(`${config.schema}.${config.table}`)
+      let user = await knex(`${config.db.schema}.${config.db.table}`)
         .where({ username_lowercase: req.body.username.toLowerCase() })
         .first("*");
       let decoded = jwt.verify(req.body.reset_token, config.secret, {
@@ -67,7 +67,7 @@ router.post("/change_password", validate(schema), async function(
 
   // Change password, increment token_count
   let digest = await bcrypt.hash(req.body.new_password, 10);
-  let usersUpdated = await knex(`${config.schema}.${config.table}`)
+  let usersUpdated = await knex(`${config.db.schema}.${config.db.table}`)
     .where({ username_lowercase: req.body.username.toLowerCase() })
     .update({ password: digest, token_count: knex.raw("token_count + 1") })
     .returning("*");

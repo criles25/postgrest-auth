@@ -19,7 +19,7 @@ const schema = {
 router.post("/refresh_token", validate(schema), async function(req, res, next) {
   if (req.body.username || req.body.password) {
     try {
-      var user = await knex(`${config.schema}.${config.table}`)
+      var user = await knex(`${config.db.schema}.${config.db.table}`)
         .where({ username_lowercase: req.body.username.toLowerCase() })
         .first("*");
 
@@ -37,7 +37,7 @@ router.post("/refresh_token", validate(schema), async function(req, res, next) {
     try {
       let decoded = jwt.verify(req.token, config.secret, { subject: "access" });
 
-      var user = await knex(`${config.schema}.${config.table}`)
+      var user = await knex(`${config.db.schema}.${config.db.table}`)
         .where({ username_lowercase: decoded.aud.toLowerCase() })
         .first("*");
 

@@ -2,8 +2,8 @@ const config = require("../config/config");
 
 const knex = require("knex")({
   client: "postgresql",
-  connection: config.connection_string || config.connection,
-  pool: config.connection_pool
+  connection: config.db.connection_string || config.db.connection,
+  pool: config.db.pool
 });
 
 module.exports = knex;
