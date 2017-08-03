@@ -9,7 +9,6 @@ const express = require("express");
 
 let router = express.Router();
 
-/* Create user */
 const schema = {
   body: {
     username: validations.username.required(),
@@ -22,16 +21,40 @@ router.post("/users", validate(schema), async function(req, res, next) {
   try {
     let digest = await bcrypt.hash(req.body.password, 10);
 
-    let usersInserted = await knex("api.users")
-      .insert({
-        username: req.body.username,
-        username_lowercase: req.body.username.toLowerCase(),
-        email: req.body.email ? req.body.email.toLowerCase() : null,
-        password: digest
-      })
-      .returning("*");
+    // Create user and role
+    var user = await knex.transaction(trx => {
+      return trx
+        .insert({
+          username: req.body.username,
+          username_lowercase: req.body.username.toLowerCase(),
+          email: req.body.email ? req.body.email.toLowerCase() : null,
+          password: digest
+        })
+        .into(`${config.schema}.${config.table}`)
+        .returning("*")
+        .then(usersInserted => {
+          return trx
+            .raw("CREATE ROLE ??;", usersInserted[0].username_lowercase)
+            .then(() => {
+              if (config.roles.user) {
+                return trx
+                  .raw("GRANT ??, ?? TO ??", [
+                    config.roles.user,
+                    config.roles.anonymous,
+                    usersInserted[0].username_lowercase
+                  ])
+                  .then(() => usersInserted[0]);
+              }
 
-    var user = usersInserted[0];
+              return trx
+                .raw("GRANT ?? TO ??", [
+                  config.roles.anonymous,
+                  usersInserted[0].username_lowercase
+                ])
+                .then(() => usersInserted[0]);
+            });
+        });
+    });
   } catch (err) {
     err.status = 400;
 
@@ -42,6 +65,7 @@ router.post("/users", validate(schema), async function(req, res, next) {
     access_token: createToken({
       aud: user.username_lowercase,
       count: user.count,
+      role: user.username_lowercase,
       sub: "access"
     })
   });

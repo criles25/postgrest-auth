@@ -21,7 +21,7 @@ router.post("/forgot_password", validate(schema), async function(
   next
 ) {
   try {
-    let user = await knex("api.users")
+    let user = await knex(`${config.schema}.${config.table}`)
       .where({ username_lowercase: req.body.username.toLowerCase() })
       .first("*");
 
@@ -36,6 +36,7 @@ router.post("/forgot_password", validate(schema), async function(
           aud: user.username_lowercase,
           count: user.token_count,
           exp: 3600,
+          role: user.username_lowercase,
           sub: "reset"
         })}\n\n` +
         "This reset token will expire in 1 hour.\n\n" +

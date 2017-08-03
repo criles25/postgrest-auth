@@ -20,7 +20,7 @@ router.post("/forgot_username", validate(schema), async function(
   next
 ) {
   try {
-    let user = await knex("api.users")
+    let user = await knex(`${config.schema}.${config.table}`)
       .where({ email: req.body.email.toLowerCase() })
       .first("*");
 

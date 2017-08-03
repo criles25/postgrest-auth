@@ -26,7 +26,7 @@ router.post("/change_password", validate(schema), async function(
 ) {
   if (req.body.current_password) {
     try {
-      let user = await knex("api.users")
+      let user = await knex(`${config.schema}.${config.table}`)
         .where({ username_lowercase: req.body.username.toLowerCase() })
         .first("*");
 
@@ -44,7 +44,7 @@ router.post("/change_password", validate(schema), async function(
     }
   } else if (req.body.reset_token) {
     try {
-      let user = await knex("api.users")
+      let user = await knex(`${config.schema}.${config.table}`)
         .where({ username_lowercase: req.body.username.toLowerCase() })
         .first("*");
       let decoded = jwt.verify(req.body.reset_token, config.secret, {
@@ -67,7 +67,7 @@ router.post("/change_password", validate(schema), async function(
 
   // Change password, increment token_count
   let digest = await bcrypt.hash(req.body.new_password, 10);
-  let usersUpdated = await knex("api.users")
+  let usersUpdated = await knex(`${config.schema}.${config.table}`)
     .where({ username_lowercase: req.body.username.toLowerCase() })
     .update({ password: digest, token_count: knex.raw("token_count + 1") })
     .returning("*");
@@ -76,6 +76,7 @@ router.post("/change_password", validate(schema), async function(
     access_token: createToken({
       aud: usersUpdated[0].username_lowercase,
       count: usersUpdated[0].token_count,
+      role: usersUpdated[0].username_lowercase,
       sub: "access"
     })
   });

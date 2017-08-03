@@ -12,12 +12,12 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bearerToken());
 
-app.use(require("./routes/change-email"));
-app.use(require("./routes/change-password"));
-app.use(require("./routes/forgot-password"));
-app.use(require("./routes/forgot-username"));
-app.use(require("./routes/refresh-token"));
-app.use(require("./routes/users"));
+app.use("/auth", require("./routes/change-email"));
+app.use("/auth", require("./routes/change-password"));
+app.use("/auth", require("./routes/forgot-password"));
+app.use("/auth", require("./routes/forgot-username"));
+app.use("/auth", require("./routes/refresh-token"));
+app.use("/auth", require("./routes/users"));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

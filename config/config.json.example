@@ -25,12 +25,14 @@
   "payload": {
     "alg": "HS256",
     "exp": 604800,
-    "iss": "https://agameoftheories.com",
-    "role": "agot_user",
-    "scope": "agot_user"
+    "iss": "https://agameoftheories.com"
   },
   "port": 3001,
-  "schema": "api",
+  "roles": {
+    "anonymous": "web_anon",
+    "user": "agot_user"
+  },
+  "schema": "auth",
   "secret": "secret",
   "table": "users"
 }

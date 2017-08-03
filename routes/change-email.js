@@ -16,7 +16,7 @@ const schema = {
 
 router.post("/change_email", validate(schema), async function(req, res, next) {
   try {
-    let user = await knex("api.users")
+    let user = await knex(`${config.schema}.${config.table}`)
       .where({ username_lowercase: req.body.username.toLowerCase() })
       .first("*");
 
@@ -26,7 +26,7 @@ router.post("/change_email", validate(schema), async function(req, res, next) {
     }
 
     // Change email
-    let usersUpdated = await knex("api.users")
+    let usersUpdated = await knex(`${config.schema}.${config.table}`)
       .where({ username_lowercase: user.username_lowercase })
       .update({ email: req.body.email.toLowerCase() })
       .returning("*");
