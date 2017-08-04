@@ -1,5 +1,5 @@
 {
-  "name": "postgrest-auth-server",
+  "name": "postgrest-auth",
   "version": "0.0.1",
   "description": "Authorization server for postgREST",
   "scripts": {
@@ -8,14 +8,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/criles25/postgrest-auth-server.git"
+    "url": "https://github.com/criles25/postgrest-auth.git"
   },
   "author": "Charles Riley",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/criles25/postgrest-auth-server/issues"
+    "url": "https://github.com/criles25/postgrest-auth/issues"
   },
-  "homepage": "https://github.com/criles25/postgrest-auth-server",
+  "homepage": "https://github.com/criles25/postgrest-auth",
   "dependencies": {
     "bcrypt": "^1.0.2",
     "body-parser": "^1.17.2",
@@ -27,6 +27,7 @@
     "jsonwebtoken": "^7.4.1",
     "knex": "^0.13.0",
     "lodash": "^4.17.4",
+    "minimist": "^1.2.0",
     "morgan": "^1.8.2",
     "nodemailer": "^4.0.1",
     "nodemon": "^1.11.0",

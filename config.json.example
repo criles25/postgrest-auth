@@ -8,6 +8,7 @@
       "user": "postgres",
       "password": "pass"
     },
+    "connection_string": "postgres://postgres:pass@localhost/postgres",
     "pool": {
       "min": 2,
       "max": 10

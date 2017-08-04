@@ -57,5 +57,3 @@ typings/
 # dotenv environment variables file
 .env
 
-# config.json file
-config/config.json
