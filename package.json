@@ -14,7 +14,7 @@
     "url": "https://github.com/criles25/postgrest-auth.git"
   },
   "author": "Charles Riley",
-  "license": "GPL-3.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/criles25/postgrest-auth/issues"
   },
