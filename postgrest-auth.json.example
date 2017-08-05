@@ -33,7 +33,7 @@
   "port": 3001,
   "roles": {
     "anonymous": "web_anon",
-    "user": "agot_user"
+    "user": "normal_user"
   },
   "secret": "secret"
 }

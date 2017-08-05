@@ -15,7 +15,7 @@ let config = {
   port: 3001,
   roles: {
     anonymous: "web_anon",
-    user: "reg_user"
+    user: "normal_user"
   }
 };
 

@@ -2,6 +2,9 @@
   "name": "postgrest-auth",
   "version": "0.0.1",
   "description": "Authorization server for postgREST",
+  "bin": {
+    "postgrest-auth": "./bin/www"
+  },
   "scripts": {
     "start": "node ./bin/www",
     "start:watch": "nodemon ./bin/www"
