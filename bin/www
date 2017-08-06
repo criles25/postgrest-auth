@@ -8,6 +8,7 @@ var app = require("../app");
 var debug = require("debug")("try:server");
 var http = require("http");
 var config = require("../config/config");
+var knex = require("../src/knex");
 
 /**
  * Get port from environment and store in Express.
@@ -23,12 +24,82 @@ app.set("port", port);
 var server = http.createServer(app);
 
 /**
- * Listen on provided port, on all network interfaces.
+ * Create authorization schema and users table
  */
 
-server.listen(port);
-server.on("error", onError);
-server.on("listening", onListening);
+knex
+  .raw(
+    `
+  CREATE SCHEMA IF NOT EXISTS ${config.db.schema};
+
+  CREATE TABLE IF NOT EXISTS ${config.db.schema}.${config.db.table} (
+    id serial PRIMARY KEY,
+    username varchar(20) NOT NULL UNIQUE,
+    username_lowercase varchar(20) NOT NULL UNIQUE,
+    email text UNIQUE,
+    password text NOT NULL,
+    token_count integer NOT NULL DEFAULT 0
+  );
+
+  DO
+  $body$
+  BEGIN
+     IF NOT EXISTS (
+        SELECT
+        FROM   pg_roles
+        WHERE  rolname = '${config.roles.anonymous}') THEN
+
+        CREATE ROLE ${config.roles.anonymous} NOLOGIN;
+     END IF;
+  END
+  $body$;
+
+  DO
+  $body$
+  BEGIN
+     IF NOT EXISTS (
+        SELECT
+        FROM   pg_roles
+        WHERE  rolname = '${config.roles.user}') THEN
+
+        CREATE ROLE ${config.roles.user} NOLOGIN;
+     END IF;
+  END
+  $body$;
+
+  GRANT USAGE ON SCHEMA ${config.db.schema} TO ${config.roles
+      .anonymous}, ${config.roles.user};
+
+  GRANT SELECT (username_lowercase, token_count) ON ${config.db.schema}.${config
+      .db.table} TO ${config.roles.anonymous};
+
+  CREATE OR REPLACE FUNCTION ${config.db
+    .schema}.check_token_count() RETURNS void
+    language plpgsql
+    as $$
+  begin
+    if current_setting('request.jwt.claim.count', true) IS NOT NULL then
+      if current_setting('request.jwt.claim.count', true)::int !=
+         (SELECT token_count
+         FROM ${config.db.schema}.${config.db.table}
+         WHERE username_lowercase = current_user) then
+           raise invalid_password using hint = 'Count invalid';
+      end if;
+    end if;
+  end
+  $$;
+
+`
+  )
+  .then(() => {
+    /**
+    * Listen on provided port, on all network interfaces.
+    */
+
+    server.listen(port);
+    server.on("error", onError);
+    server.on("listening", onListening);
+  });
 
 /**
  * Normalize a port into a number, string, or false.

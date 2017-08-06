@@ -1,6 +1,6 @@
 {
   "name": "postgrest-auth",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Authorization server for postgREST",
   "bin": {
     "postgrest-auth": "./bin/www"
